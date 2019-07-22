@@ -1,6 +1,9 @@
 from pyknow import *
 
 class Tuberculosis(KnowledgeEngine):
+    def __init__(self, result):
+        super().__init__()
+        self.result = result
 
     # R1 - Danios en el sistema respiratorio
     
@@ -144,7 +147,7 @@ class Tuberculosis(KnowledgeEngine):
 
     @Rule(Fact(presencia_bacilos=3))
     def presencia_bacilos_alta_visita_médico(self):
-        print("VISITA MÉDICA")
+        self.result.doctor = True
 
     @Rule(Fact(presencia_bacilos=2),
           OR(
@@ -155,7 +158,7 @@ class Tuberculosis(KnowledgeEngine):
               Fact(danio_sistema_inmunologico=3)              
           ))
     def presencia_bacilos_media_y_un_indicio_alto_visita_médico(self):
-        print("VISITA MÉDICA")
+        self.result.doctor = True
 
     @Rule(OR(
             AND(Fact(danios_respiratorios=3), Fact(propension_contagio=3)),
@@ -170,7 +173,7 @@ class Tuberculosis(KnowledgeEngine):
             AND(Fact(propension_clase_social=3), Fact(danio_sistema_inmunologico=3))
     ))
     def dos_indicios_altos(self):
-        print("VISITA MÉDICA")
+        self.result.doctor = True
 
     @Rule(OR(
             AND(Fact(danios_respiratorios=2),
@@ -211,7 +214,7 @@ class Tuberculosis(KnowledgeEngine):
             ),
     ))
     def cinco_indicios_medios(self):
-        print("VISITA MÉDICA")
+        self.result.doctor = True
 
     @Rule(OR(
             AND(Fact(danios_respiratorios=3),
@@ -255,30 +258,4 @@ class Tuberculosis(KnowledgeEngine):
                 )),
     ))                
     def un_indicio_alto_tres_medios(self):
-        print("VISITA MÉDICA")
-
-engine = Tuberculosis()
-engine.reset()  # Prepare the engine for the execution.
-
-engine.declare(Fact(sistema_respiratorio=3))
-
-engine.declare(Fact(contacto_social=2))
-engine.declare(Fact(exposicion=3))
-
-engine.declare(Fact(sudores_nocturnos=True))
-engine.declare(Fact(astenia=3))
-engine.declare(Fact(hiporexia=3))
-engine.declare(Fact(adinamia=3))
-
-engine.declare(Fact(alimentacion=3))
-engine.declare(Fact(salubridad=3))
-
-engine.declare(Fact(inmunosupresion=2))
-engine.declare(Fact(inmunodeficiencia=False))
-engine.declare(Fact(hiv=False))
-engine.declare(Fact(bcg=False))
-
-engine.declare(Fact(bacilos_esputo=False))
-engine.declare(Fact(bacilos_secrecion=False))
-
-engine.run()  # Run it!
+        self.result.doctor = True

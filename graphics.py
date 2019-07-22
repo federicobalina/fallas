@@ -1,11 +1,15 @@
-from tkinter import *
- 
-from tkinter.ttk import *
+from tkinter import Tk, IntVar, BooleanVar, Label, Button, messagebox
+from tkinter.ttk import Radiobutton
+from main import Tuberculosis
+from pyknow import Fact
+
+class Result:
+    def __init__(self):
+        self.doctor = False
 
 class RadioButtons:
     def __init__(self, window, label, column, row, values):
         self.buttons = []
-        self.selected = IntVar()
         
         lbl = Label(window, text=label)
         lbl.grid(column=column, row=row)
@@ -17,13 +21,17 @@ class RadioButtons:
 
 class RadioButtons_1_to_5(RadioButtons):
     def __init__(self, window, label, column, row):
+        self.selected = IntVar()
         values = [('1', 1), ('2', 2), ('3', 3), ('4', 4), ('5', 5)]
         super().__init__(window, label, column, row, values)
+        self.selected.set(1)
 
 class RadioButtons_yes_or_no(RadioButtons):
     def __init__(self, window, label, column, row):
+        self.selected = BooleanVar()
         values = [('Sí', True), ('No', False)]
         super().__init__(window, label, column, row, values)
+        self.selected.set(True)
 
 window = Tk()
  
@@ -45,5 +53,23 @@ buttons['inmunosupresion'] = RadioButtons_1_to_5(window, "Consumo de medicamento
 buttons['bcg'] = RadioButtons_yes_or_no(window, "Vacuna BCG", 0, 12)
 buttons['bacilos_esputo'] = RadioButtons_yes_or_no(window, "Bacilos en esputo", 0, 13)
 buttons['bacilos_secrecion'] = RadioButtons_yes_or_no(window, "Bacilos en cultivo de secreción", 0, 14)
+
+def clicked():
+    r = Result()
+    engine = Tuberculosis(r)
+    engine.reset()
+
+    facts = [Fact(**{k:v.selected.get()}) for k,v in buttons.items()]
+    engine.declare(*facts)
+    engine.run()
+    text = ""
+    if r.doctor:
+        text = "ES POSIBLE QUE SUFRA DE TUBERCULOSIS, VISITE A UN MÉDICO A LA BREVEDAD"
+    else:
+        text = "ES POCO PROBABLE QUE SUFRA DE TUBERCULOSIS"
+    messagebox.showinfo("RESULTADO", text)
+
+btn = Button(window, text="CONSULTAR", fg='blue', command=clicked)
+btn.grid(column=0, row=15)
 
 window.mainloop()
